@@ -6,10 +6,13 @@
   <body>
     <h1>Cities</h1>
     <script>
+      var width = 1280;
+      var height = 360;
+      
     var config = {
         type: Phaser.AUTO,
-        width: 800,
-        height: 600,
+        width: width,
+        height: height,
         physics: {
             default: 'arcade',
             arcade: {
@@ -31,15 +34,28 @@
         this.load.image('archer', 'imgs/Archer.png');
         this.load.image('sword', 'imgs/Sword.png');
         this.load.image('sky', 'imgs/sky.png');
+
+        this.city = {
+            dimensions: {
+                sky: { w: 1280, h: 360},
+                tower: { w: 177, h: 325},
+                archer: { w: 120, h: 202},
+                sword: { w: 98, h: 202}
+            }
+        };
     }
 
     function create ()
     {
-        this.add.image(400, 300, 'sky');
+        this.add.image(width/2, height/2, 'sky').setScale(1, 0.5);
 
         var statics = this.physics.add.staticGroup();
-        statics.create(90, 438, 'wtower');
-        statics.create(710, 438, 'btower');
+        statics.create(this.city.dimensions.tower.w/2,
+                       height - (this.city.dimensions.tower.h/2),
+                       'wtower');
+        statics.create(width - (this.city.dimensions.tower.w/2),
+                       height - (this.city.dimensions.tower.h/2),
+                       'btower');
 
         var archer = this.physics.add.sprite(250, 699, 'archer');
         archer.setVelocity(50, 0);
