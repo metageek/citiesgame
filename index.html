@@ -26,32 +26,25 @@
 
     function preload ()
     {
-        this.load.setBaseURL('http://labs.phaser.io');
-
-        this.load.image('sky', 'assets/skies/space3.png');
-        this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-        this.load.image('red', 'assets/particles/red.png');
+        this.load.image('wtower', 'imgs/Tower-white.png');
+        this.load.image('btower', 'imgs/Tower-black.png');
+        this.load.image('archer', 'imgs/Archer.png');
+        this.load.image('sword', 'imgs/Sword.png');
+        this.load.image('sky', 'imgs/sky.png');
     }
 
     function create ()
     {
         this.add.image(400, 300, 'sky');
 
-        var particles = this.add.particles('red');
+        var statics = this.physics.add.staticGroup();
+        statics.create(90, 438, 'wtower');
+        statics.create(710, 438, 'btower');
 
-        var emitter = particles.createEmitter({
-            speed: 100,
-            scale: { start: 1, end: 0 },
-            blendMode: 'ADD'
-        });
-
-        var logo = this.physics.add.image(400, 100, 'logo');
-
-        logo.setVelocity(100, 200);
-        logo.setBounce(1, 1);
-        logo.setCollideWorldBounds(true);
-
-        emitter.startFollow(logo);
+        var archer = this.physics.add.sprite(250, 699, 'archer');
+        archer.setVelocity(50, 0);
+        archer.setBounce(1, 0);
+        archer.setCollideWorldBounds(true);
     }
     </script>
   </body>
