@@ -31,10 +31,25 @@
     {
         this.load.image('wtower', 'imgs/Tower-white.png');
         this.load.image('btower', 'imgs/Tower-black.png');
-        this.load.image('archer', 'imgs/Archer.png');
         this.load.image('sword', 'imgs/Sword.png');
         this.load.image('sky', 'imgs/sky.png');
+        this.load.spritesheet('archer', 'imgs/ArcherSprite.png',
+                              {frameWidth : 120, frameHeight: 202});
 
+        this.anims.create({
+            key: 'right',
+            frames: [ { key: 'archer', frame: 0} ],
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'left',
+            frames: [ { key: 'archer', frame: 1} ],
+            frameRate: 10,
+            repeat: -1
+        });
+        
         this.city = {
             dimensions: {
                 sky: { w: 1280, h: 360},
@@ -64,12 +79,20 @@
                                     height - this.city.dimensions.archer.h/2,
                                     'archer');
         archer.setVelocity(50, 0);
-        archer.setCollideWorldBounds(true);
-
+        
         this.physics.add.collider(btower, archer,
                                   function (o1, o2) {
-                                      archer.setVelocity(0, 0);
+                                      archer.setVelocity(-50, 0);
+                                      archer.flipX = true;
                                   });
+
+        this.physics.add.collider(wtower, archer,
+                                  function (o1, o2) {
+                                      archer.setVelocity(50, 0);
+                                      archer.flipX = false;
+                                  });
+
+        archer.setCollideWorldBounds(true);
     }
     </script>
   </body>
