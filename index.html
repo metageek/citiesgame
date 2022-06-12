@@ -49,18 +49,27 @@
     {
         this.add.image(width/2, height/2, 'sky').setScale(1, 0.5);
 
-        var statics = this.physics.add.staticGroup();
-        statics.create(this.city.dimensions.tower.w/2,
-                       height - (this.city.dimensions.tower.h/2),
-                       'wtower');
-        statics.create(width - (this.city.dimensions.tower.w/2),
-                       height - (this.city.dimensions.tower.h/2),
-                       'btower');
+        var wtower = this.physics.add.staticImage(
+            this.city.dimensions.tower.w/2,
+            height - (this.city.dimensions.tower.h/2),
+            'wtower');
+        var btower = this.physics.add.staticImage(
+            width - (this.city.dimensions.tower.w/2),
+            height - (this.city.dimensions.tower.h/2),
+            'btower');
 
-        var archer = this.physics.add.sprite(250, 699, 'archer');
+        var archer =
+            this.physics.add.sprite(this.city.dimensions.tower.w
+                                    + this.city.dimensions.archer.w * 0.6,
+                                    height - this.city.dimensions.archer.h/2,
+                                    'archer');
         archer.setVelocity(50, 0);
-        archer.setBounce(1, 0);
         archer.setCollideWorldBounds(true);
+
+        this.physics.add.collider(btower, archer,
+                                  function (o1, o2) {
+                                      archer.setVelocity(0, 0);
+                                  });
     }
     </script>
   </body>
