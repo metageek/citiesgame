@@ -46,9 +46,15 @@
                 archer: { w: 120, h: 202},
                 sword: { w: 98, h: 202}
             },
-            objects: {}
+            objects: {},
+            groups: {}
         };
     }
+
+function startCombat(playerSword, enemySword)
+{
+    console.log("Fight!");
+}
 
       function buildSword(forEnemy)
       {
@@ -57,14 +63,34 @@
           var x = (forEnemy
                    ? this.city.dimensions.sky.w - fromBorder
                    : fromBorder);
+          var group = (forEnemy
+                       ? this.city.groups.enemyPieces
+                       : this.city.groups.playerPieces);
           var sword =
-            this.physics.add.sprite(x,
-                                    height - this.city.dimensions.sword.h/4,
-                                    forEnemy ? 'swordR' : 'sword');
+            group.create(x,
+                         height - this.city.dimensions.sword.h/4,
+                         forEnemy ? 'swordR' : 'sword');
           sword.setVelocity(forEnemy ? -25 : 25, 0);
           sword.setScale(0.5);
+          sword.name = forEnemy ? "enemy.sword" : "player.sword";
 
           sword.flipX = forEnemy;
+
+          if (forEnemy) {
+              this.physics.add.collider(sword, this.city.groups.playerPieces,
+                                        function(o1, o2) {
+                                            o1.setVelocity(0, 0);
+                                            o2.setVelocity(0, 0);
+                                            scene.startCombat(o2, o1);
+                                        });
+          } else {
+              this.physics.add.collider(sword, this.city.groups.enemyPieces,
+                                        function(o1, o2) {
+                                            o1.setVelocity(0, 0);
+                                            o2.setVelocity(0, 0);
+                                            scene.startCombat(o1, o2);
+                                        });
+          }
 
         this.physics.add.collider(this.city.objects.btower, sword,
                                   function (o1, o2) {
@@ -102,9 +128,12 @@ function twoSwords()
 
         this.city.objects.wtower = wtower;
         this.city.objects.btower = btower;
+        this.city.groups.playerPieces = this.physics.add.group();
+        this.city.groups.enemyPieces = this.physics.add.group();
 
         this.buildSword = buildSword;
         this.twoSwords = twoSwords;
+        this.startCombat = startCombat;
 
         scene = this;
     }
