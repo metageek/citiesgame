@@ -22,11 +22,13 @@
         },
         scene: {
             preload: preload,
-            create: create
+            create: create,
+            buildSword: buildSword
         }
     };
 
-    var game = new Phaser.Game(config);
+      var game = new Phaser.Game(config);
+      var scene = null;
 
     function preload ()
     {
@@ -42,9 +44,35 @@
                 tower: { w: 177, h: 325},
                 archer: { w: 120, h: 202},
                 sword: { w: 98, h: 202}
-            }
+            },
+            objects: {}
         };
     }
+
+      function buildSword()
+      {
+        var sword =
+            this.physics.add.sprite(this.city.dimensions.tower.w
+                                    + this.city.dimensions.sword.w * 0.6,
+                                    height - this.city.dimensions.sword.h/4,
+                                    'sword');
+        sword.setVelocity(25, 0);
+        sword.setScale(0.5);
+        
+        this.physics.add.collider(this.city.objects.btower, sword,
+                                  function (o1, o2) {
+                                      sword.setVelocity(-25, 0);
+                                      sword.flipX = true;
+                                  });
+
+        this.physics.add.collider(this.city.objects.wtower, sword,
+                                  function (o1, o2) {
+                                      sword.setVelocity(25, 0);
+                                      sword.flipX = false;
+                                  });
+
+        sword.setCollideWorldBounds(true);
+      }
 
     function create ()
     {
@@ -59,27 +87,19 @@
             height - (this.city.dimensions.tower.h/2),
             'btower');
 
-        var archer =
-            this.physics.add.sprite(this.city.dimensions.tower.w
-                                    + this.city.dimensions.archer.w * 0.6,
-                                    height - this.city.dimensions.archer.h/2,
-                                    'archer');
-        archer.setVelocity(50, 0);
-        
-        this.physics.add.collider(btower, archer,
-                                  function (o1, o2) {
-                                      archer.setVelocity(-50, 0);
-                                      archer.flipX = true;
-                                  });
+        this.city.objects.wtower = wtower;
+        this.city.objects.btower = btower;
 
-        this.physics.add.collider(wtower, archer,
-                                  function (o1, o2) {
-                                      archer.setVelocity(50, 0);
-                                      archer.flipX = false;
-                                  });
+        this.buildSword = buildSword;
 
-        archer.setCollideWorldBounds(true);
+        scene = this;
     }
+
     </script>
+    <table>
+      <tr>
+        <td><button type="button" onClick="scene.buildSword();" name="build">Build</button></td>
+      </tr>
+    </table>
   </body>
 </html>
