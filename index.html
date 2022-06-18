@@ -50,10 +50,35 @@
             groups: {}
         };
     }
+function randomIntFromInterval(min, max) { // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
 
 function startCombat(playerSword, enemySword)
 {
     console.log("Fight!");
+    var playerDmgDone = randomIntFromInterval(playerSword.dmg.min,
+                                              playerSword.dmg.max);
+    enemySword.hp -= playerDmgDone;
+    if (enemySword.hp <= 0) {
+        this.city.groups.enemyPieces.remove(enemySword, true, true);
+        playerSword.setVelocity(25, 0);
+        return;
+    }
+
+    var enemyDmgDone = randomIntFromInterval(enemySword.dmg.min,
+                                             enemySword.dmg.max);
+    playerSword.hp -= enemyDmgDone;
+    if (playerSword.hp <= 0) {
+        this.city.groups.playerPieces.remove(playerSword, true, true);
+        enemySword.setVelocity(-25, 0);
+        return;
+    }
+
+    playerSword.x -= 10;
+    playerSword.setVelocity(5, 0);
+    enemySword.x += 10;
+    enemySword.setVelocity(-5, 0);
 }
 
       function buildSword(forEnemy)
@@ -66,6 +91,9 @@ function startCombat(playerSword, enemySword)
           var group = (forEnemy
                        ? this.city.groups.enemyPieces
                        : this.city.groups.playerPieces);
+          var otherGroup = (forEnemy
+                            ? this.city.groups.playerPieces
+                            : this.city.groups.enemyPieces);
           var sword =
             group.create(x,
                          height - this.city.dimensions.sword.h/4,
@@ -76,21 +104,14 @@ function startCombat(playerSword, enemySword)
 
           sword.flipX = forEnemy;
 
-          if (forEnemy) {
-              this.physics.add.collider(sword, this.city.groups.playerPieces,
-                                        function(o1, o2) {
-                                            o1.setVelocity(0, 0);
-                                            o2.setVelocity(0, 0);
-                                            scene.startCombat(o2, o1);
-                                        });
-          } else {
-              this.physics.add.collider(sword, this.city.groups.enemyPieces,
-                                        function(o1, o2) {
-                                            o1.setVelocity(0, 0);
-                                            o2.setVelocity(0, 0);
-                                            scene.startCombat(o1, o2);
-                                        });
-          }
+          sword.hp = 20;
+          sword.dmg = {min: 1, max: 6};
+
+          this.physics.add.collider(sword, otherGroup,
+                                    function(o1, o2) {
+                                        scene.startCombat(forEnemy ? o2 : o1,
+                                                          forEnemy ? o1 : o2);
+                                    });
 
         this.physics.add.collider(this.city.objects.btower, sword,
                                   function (o1, o2) {
