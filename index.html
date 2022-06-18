@@ -56,7 +56,6 @@ function randomIntFromInterval(min, max) { // min and max included
 
 function startCombat(playerSword, enemySword)
 {
-    console.log("Fight!");
     var playerDmgDone = randomIntFromInterval(playerSword.dmg.min,
                                               playerSword.dmg.max);
     enemySword.hp -= playerDmgDone;
@@ -75,10 +74,20 @@ function startCombat(playerSword, enemySword)
         return;
     }
 
-    playerSword.x -= 10;
-    playerSword.setVelocity(5, 0);
-    enemySword.x += 10;
-    enemySword.setVelocity(-5, 0);
+    playerSword.x -= 15;
+    playerSword.setVelocity(25, 0);
+    enemySword.x += 15;
+    enemySword.setVelocity(-25, 0);
+}
+
+function gameOver(playerWon)
+{
+    if (playerWon) {
+        alert("You won!");
+    } else {
+        alert("You lose.");
+    }
+    game.scene.pause("default");
 }
 
       function buildSword(forEnemy)
@@ -94,6 +103,9 @@ function startCombat(playerSword, enemySword)
           var otherGroup = (forEnemy
                             ? this.city.groups.playerPieces
                             : this.city.groups.enemyPieces);
+          var otherTower = (forEnemy
+                            ? this.city.objects.wtower
+                            : this.city.objects.btower);
           var sword =
             group.create(x,
                          height - this.city.dimensions.sword.h/4,
@@ -113,16 +125,10 @@ function startCombat(playerSword, enemySword)
                                                           forEnemy ? o1 : o2);
                                     });
 
-        this.physics.add.collider(this.city.objects.btower, sword,
+        this.physics.add.collider(sword, otherTower,
                                   function (o1, o2) {
-                                      sword.setVelocity(-25, 0);
-                                      sword.flipX = !sword.flipX;
-                                  });
-
-        this.physics.add.collider(this.city.objects.wtower, sword,
-                                  function (o1, o2) {
-                                      sword.setVelocity(25, 0);
-                                      sword.flipX = !sword.flipX;
+                                      sword.setVelocity(0, 0);
+                                      gameOver(!forEnemy);
                                   });
 
         sword.setCollideWorldBounds(true);
