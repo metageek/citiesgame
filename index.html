@@ -34,8 +34,10 @@
     {
         this.load.image('wtower', 'imgs/Tower2W.png');
         this.load.image('btower', 'imgs/Tower2R.png');
-        this.load.image('sword', 'imgs/Sword2.png');
-        this.load.image('swordR', 'imgs/Sword2Red.png');
+        this.load.spritesheet('swordsprite', 'imgs/Sword2Sprite.png',
+                              {frameWidth: 120, frameHeight: 202});
+        this.load.spritesheet('swordRsprite', 'imgs/Sword2RedSprite.png',
+                              {frameWidth: 120, frameHeight: 202});
         this.load.image('sky', 'imgs/sky.png');
         this.load.image('archer', 'imgs/Archer2.png');
         
@@ -52,6 +54,16 @@
     }
 function randomIntFromInterval(min, max) { // min and max included 
   return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+function frameForHp(hp)
+{
+    if (hp > 15) { return 0; }
+    if (hp > 10) { return 1; }
+    if (hp >  5) { return 2; }
+    if (hp >  0) { return 3; }
+
+    return 3;
 }
 
 function startCombat(playerSword, enemySword)
@@ -76,8 +88,11 @@ function startCombat(playerSword, enemySword)
 
     playerSword.x -= 15;
     playerSword.setVelocity(25, 0);
+    playerSword.setFrame(frameForHp(playerSword.hp))
+    
     enemySword.x += 15;
     enemySword.setVelocity(-25, 0);
+    enemySword.setFrame(frameForHp(enemySword.hp))
 }
 
 function gameOver(playerWon)
@@ -109,7 +124,8 @@ function gameOver(playerWon)
           var sword =
             group.create(x,
                          height - this.city.dimensions.sword.h/4,
-                         forEnemy ? 'swordR' : 'sword');
+                         forEnemy ? 'swordRsprite' : 'swordsprite',
+                        0);
           sword.setVelocity(forEnemy ? -25 : 25, 0);
           sword.setScale(0.5);
           sword.name = forEnemy ? "enemy.sword" : "player.sword";
